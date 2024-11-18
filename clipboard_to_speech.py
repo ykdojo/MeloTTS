@@ -4,6 +4,7 @@ from melo.api import TTS
 import time
 from playsound import playsound
 import re
+from fugashi import Tagger  # Import Fugashi for Kanji conversion
 
 # Set up TTS models and configurations
 speed = 1.3
@@ -32,6 +33,12 @@ def expand_acronyms(text):
 
     return re.sub(r'([A-Z]{2,})', replace_with_phonetic, text)
 
+def convert_kanji_to_hiragana(text):
+    tagger = Tagger()
+    tokens = tagger(text)
+    hiragana_text = ''.join(token.feature.kana or token.surface for token in tokens)
+    return hiragana_text
+
 def on_activate_english():
     current_text = pyperclip.paste()
     print("Selected text:", current_text)
@@ -50,8 +57,12 @@ def on_activate_japanese():
     current_text = pyperclip.paste()
     print("Selected text:", current_text)
     
+    # Convert Kanji to Hiragana
+    hiragana_text = convert_kanji_to_hiragana(current_text)
+    print("Hiragana text:", hiragana_text)
+    
     start_time = time.time()
-    japanese_model.tts_to_file(current_text, japanese_speaker_ids['JP'], output_path_jp, speed=speed)
+    japanese_model.tts_to_file(hiragana_text, japanese_speaker_ids['JP'], output_path_jp, speed=speed)
     execution_time = time.time() - start_time
     print(f"Audio generation took {execution_time:.2f} seconds")
     
