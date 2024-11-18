@@ -1,4 +1,5 @@
 from melo.api import TTS
+import time
 
 # Speed is adjustable
 speed = 1.5
@@ -14,4 +15,10 @@ speaker_ids = model.hps.data.spk2id
 
 # British accent
 output_path = 'en-br.wav'
+
+# Measure execution time
+start_time = time.time()
 model.tts_to_file(text, speaker_ids['EN-BR'], output_path, speed=speed)
+execution_time = time.time() - start_time
+
+print(f"Audio generation took {execution_time:.2f} seconds")
