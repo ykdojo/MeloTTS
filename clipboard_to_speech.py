@@ -44,7 +44,8 @@ def convert_fullwidth_to_halfwidth(text):
     return text.translate(str.maketrans('０１２３４５６７８９', '0123456789'))
 
 def convert_single_numbers_to_kanji(text):
-    return ''.join(number_to_kanji.get(char, char) for char in text)
+    # Only convert isolated single digits (0-9) to kanji
+    return re.sub(r'(?<!\d)(\d)(?!\d)', lambda m: number_to_kanji.get(m.group(1), m.group(1)), text)
 
 def on_activate_english():
     current_text = pyperclip.paste()
