@@ -5,6 +5,7 @@ import time
 from playsound import playsound
 import re
 from fugashi import Tagger  # Import Fugashi for Kanji conversion
+from mappings import phonetic_map, japanese_phonetic_map, number_to_kanji
 
 # Set up TTS models and configurations
 speed = 1.3
@@ -15,52 +16,6 @@ english_speaker_ids = english_model.hps.data.spk2id
 japanese_speaker_ids = japanese_model.hps.data.spk2id
 output_path_en = 'clipboard_audio_en.wav'
 output_path_jp = 'clipboard_audio_jp.wav'
-
-# Mapping of letters to their phonetic pronunciations
-phonetic_map = {
-    'A': 'ay', 'B': 'bee', 'C': 'see', 'D': 'dee', 'E': 'ee',
-    'F': 'ef', 'G': 'gee', 'H': 'aitch', 'I': 'eye', 'J': 'jay',
-    'K': 'kay', 'L': 'el', 'M': 'em', 'N': 'en', 'O': 'oh',
-    'P': 'pee', 'Q': 'cue', 'R': 'ar', 'S': 'ess', 'T': 'tee',
-    'U': 'you', 'V': 'vee', 'W': 'double-u', 'X': 'ex', 'Y': 'why',
-    'Z': 'zee'
-}
-
-# Mapping of letters to their phonetic pronunciations in Katakana
-japanese_phonetic_map = {
-    # Half-width characters
-    'A': 'エー', 'B': 'ビー', 'C': 'シー', 'D': 'ディー', 'E': 'イー',
-    'F': 'エフ', 'G': 'ジー', 'H': 'エイチ', 'I': 'アイ', 'J': 'ジェイ',
-    'K': 'ケー', 'L': 'エル', 'M': 'エム', 'N': 'エヌ', 'O': 'オー',
-    'P': 'ピー', 'Q': 'キュー', 'R': 'アール', 'S': 'エス', 'T': 'ティー',
-    'U': 'ユー', 'V': 'ヴィー', 'W': 'ダブリュー', 'X': 'エックス', 'Y': 'ワイ',
-    'Z': 'ゼット',
-    'a': 'エー', 'b': 'ビー', 'c': 'シー', 'd': 'ディー', 'e': 'イー',
-    'f': 'エフ', 'g': 'ジー', 'h': 'エイチ', 'i': 'アイ', 'j': 'ジェイ',
-    'k': 'ケー', 'l': 'エル', 'm': 'エム', 'n': 'エヌ', 'o': 'オー',
-    'p': 'ピー', 'q': 'キュー', 'r': 'アール', 's': 'エス', 't': 'ティー',
-    'u': 'ユー', 'v': 'ヴィー', 'w': 'ダブリュー', 'x': 'エックス', 'y': 'ワイ',
-    'z': 'ゼット',
-    # Full-width characters
-    'Ａ': 'エー', 'Ｂ': 'ビー', 'Ｃ': 'シー', 'Ｄ': 'ディー', 'Ｅ': 'イー',
-    'Ｆ': 'エフ', 'Ｇ': 'ジー', 'Ｈ': 'エイチ', 'Ｉ': 'アイ', 'Ｊ': 'ジェイ',
-    'Ｋ': 'ケー', 'Ｌ': 'エル', 'Ｍ': 'エム', 'Ｎ': 'エヌ', 'Ｏ': 'オー',
-    'Ｐ': 'ピー', 'Ｑ': 'キュー', 'Ｒ': 'アール', 'Ｓ': 'エス', 'Ｔ': 'ティー',
-    'Ｕ': 'ユー', 'Ｖ': 'ヴィー', 'Ｗ': 'ダブリュー', 'Ｘ': 'エックス', 'Ｙ': 'ワイ',
-    'Ｚ': 'ゼット',
-    'ａ': 'エー', 'ｂ': 'ビー', 'ｃ': 'シー', 'ｄ': 'ディー', 'ｅ': 'イー',
-    'ｆ': 'エフ', 'ｇ': 'ジー', 'ｈ': 'エイチ', 'ｉ': 'アイ', 'ｊ': 'ジェイ',
-    'ｋ': 'ケー', 'ｌ': 'エル', 'ｍ': 'エム', 'ｎ': 'エヌ', 'ｏ': 'オー',
-    'ｐ': 'ピー', 'ｑ': 'キュー', 'ｒ': 'アール', 'ｓ': 'エス', 'ｔ': 'ティー',
-    'ｕ': 'ユー', 'ｖ': 'ヴィー', 'ｗ': 'ダブリュー', 'ｘ': 'エックス', 'ｙ': 'ワイ',
-    'ｚ': 'ゼット'
-}
-
-# Mapping of numbers to Kanji
-number_to_kanji = {
-    '0': '零', '1': '一', '2': '二', '3': '三', '4': '四',
-    '5': '五', '6': '六', '7': '七', '8': '八', '9': '九'
-}
 
 def expand_acronyms(text):
     def replace_with_phonetic(match):
