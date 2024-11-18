@@ -5,6 +5,7 @@ import time
 from playsound import playsound
 import re
 from fugashi import Tagger  # Import Fugashi for Kanji conversion
+from janome.tokenizer import Tokenizer
 from mappings import phonetic_map, japanese_phonetic_map, number_to_kanji
 from text_conversions import expand_acronyms, convert_text_to_japanese_phonetic
 
@@ -34,6 +35,19 @@ def convert_single_numbers_to_kanji(text):
     # Only convert isolated single digits (0-9) to kanji
     return re.sub(r'(?<!\d)(\d)(?!\d)', lambda m: number_to_kanji.get(m.group(1), m.group(1)), text)
 
+def segment_japanese_text(text):
+    tokenizer = Tokenizer()
+    sentences = []
+    sentence = ''
+    for token in tokenizer.tokenize(text, wakati=True):
+        sentence += token
+        if token in '。！？':
+            sentences.append(sentence)
+            sentence = ''
+    if sentence:
+        sentences.append(sentence)
+    return sentences
+
 def on_activate_english():
     current_text = pyperclip.paste()
     print("Selected text:", current_text)
@@ -52,28 +66,33 @@ def on_activate_japanese():
     current_text = pyperclip.paste()
     print("Selected text:", current_text)
     
-    # Convert full-width numbers to half-width numbers
-    halfwidth_text = convert_fullwidth_to_halfwidth(current_text)
-    print("Half-width text:", halfwidth_text)
+    # Segment text into sentences
+    sentences = segment_japanese_text(current_text)
+    print("Segmented sentences:", sentences)
     
-    # Convert single numbers to Kanji
-    kanji_text = convert_single_numbers_to_kanji(halfwidth_text)
-    print("Kanji text:", kanji_text)
-    
-    # Convert Kanji to Katakana
-    katakana_text = convert_kanji_to_katakana(kanji_text)
-    print("Katakana text:", katakana_text)
-    
-    # Convert text to Japanese phonetic form
-    phonetic_text = convert_text_to_japanese_phonetic(katakana_text)
-    print("Phonetic text:", phonetic_text)
-    
-    start_time = time.time()
-    japanese_model.tts_to_file(phonetic_text, japanese_speaker_ids['JP'], output_path_jp, speed=speed)
-    execution_time = time.time() - start_time
-    print(f"Audio generation took {execution_time:.2f} seconds")
-    
-    playsound(output_path_jp)
+    for sentence in sentences:
+        # Convert full-width numbers to half-width numbers
+        halfwidth_text = convert_fullwidth_to_halfwidth(sentence)
+        print("Half-width text:", halfwidth_text)
+        
+        # Convert single numbers to Kanji
+        kanji_text = convert_single_numbers_to_kanji(halfwidth_text)
+        print("Kanji text:", kanji_text)
+        
+        # Convert Kanji to Katakana
+        katakana_text = convert_kanji_to_katakana(kanji_text)
+        print("Katakana text:", katakana_text)
+        
+        # Convert text to Japanese phonetic form
+        phonetic_text = convert_text_to_japanese_phonetic(katakana_text)
+        print("Phonetic text:", phonetic_text)
+        
+        start_time = time.time()
+        japanese_model.tts_to_file(phonetic_text, japanese_speaker_ids['JP'], output_path_jp, speed=speed)
+        execution_time = time.time() - start_time
+        print(f"Audio generation took {execution_time:.2f} seconds")
+        
+        playsound(output_path_jp)
     
 def for_canonical(f):
     return lambda k: f(l.canonical(k))
