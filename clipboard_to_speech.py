@@ -2,8 +2,6 @@ import pyperclip
 from pynput import keyboard
 from melo.api import TTS
 import time
-import os
-import platform
 from playsound import playsound  # Import playsound
 
 # Set up TTS model and configurations
@@ -13,14 +11,24 @@ model = TTS(language='EN', device=device)
 speaker_ids = model.hps.data.spk2id
 output_path = 'clipboard_audio.wav'
 
+import re
+
+def expand_acronyms(text):
+    # Regular expression to find acronyms (all uppercase words)
+    return re.sub(r'\b([A-Z]{2,})\b', lambda x: '!'.join(x.group(1)) + '!', text)
+
 def on_activate():
     # Get the current text from the clipboard
     current_text = pyperclip.paste()
     print("Selected text:", current_text)
     
-    # Convert the clipboard text to audio
+    # Expand acronyms in the text
+    expanded_text = expand_acronyms(current_text)
+    print("Expanded text:", expanded_text)
+    
+    # Convert the expanded text to audio
     start_time = time.time()
-    model.tts_to_file(current_text, speaker_ids['EN-BR'], output_path, speed=speed)
+    model.tts_to_file(expanded_text, speaker_ids['EN-BR'], output_path, speed=speed)
     execution_time = time.time() - start_time
     print(f"Audio generation took {execution_time:.2f} seconds")
     
