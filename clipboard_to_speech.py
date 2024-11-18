@@ -15,7 +15,7 @@ import re
 
 def expand_acronyms(text):
     # Regular expression to find acronyms (all uppercase words)
-    return re.sub(r'\b([A-Z]{2,})\b', lambda x: '!'.join(x.group(1)) + '!', text)
+    return re.sub(r'([A-Z]{2,})', lambda x: '!' + '!'.join(x.group(1)) + '!', text)
 
 def on_activate():
     # Get the current text from the clipboard
