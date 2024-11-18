@@ -9,6 +9,7 @@ from text_conversions import (
     convert_fullwidth_to_halfwidth,
     convert_single_numbers_to_kanji,
     convert_kanji_to_katakana,
+    segment_english_text,
     segment_japanese_text
 )
 
@@ -26,15 +27,20 @@ def on_activate_english():
     current_text = pyperclip.paste()
     print("Selected text:", current_text)
     
-    expanded_text = expand_acronyms(current_text)
-    print("Expanded text:", expanded_text)
+    # Segment text into sentences
+    sentences = segment_english_text(current_text)
+    print("Segmented sentences:", sentences)
     
-    start_time = time.time()
-    english_model.tts_to_file(expanded_text, english_speaker_ids['EN-BR'], output_path_en, speed=speed)
-    execution_time = time.time() - start_time
-    print(f"Audio generation took {execution_time:.2f} seconds")
-    
-    playsound(output_path_en)
+    for sentence in sentences:
+        expanded_text = expand_acronyms(sentence)
+        print("Expanded text:", expanded_text)
+        
+        start_time = time.time()
+        english_model.tts_to_file(expanded_text, english_speaker_ids['EN-BR'], output_path_en, speed=speed)
+        execution_time = time.time() - start_time
+        print(f"Audio generation took {execution_time:.2f} seconds")
+        
+        playsound(output_path_en)
 
 def on_activate_japanese():
     current_text = pyperclip.paste()

@@ -33,6 +33,12 @@ def convert_kanji_to_katakana(text):
     )
     return katakana_text
 
+def segment_english_text(text):
+    # Simple sentence segmentation based on punctuation
+    sentence_endings = re.compile(r'(?<=[.!?]) +')
+    sentences = sentence_endings.split(text)
+    return sentences
+
 def segment_japanese_text(text):
     tokenizer = Tokenizer()
     sentences = []
