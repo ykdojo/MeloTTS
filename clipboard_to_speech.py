@@ -4,6 +4,7 @@ from melo.api import TTS
 import time
 import os
 import platform
+from playsound import playsound  # Import playsound
 
 # Set up TTS model and configurations
 speed = 1.3
@@ -23,14 +24,8 @@ def on_activate():
     execution_time = time.time() - start_time
     print(f"Audio generation took {execution_time:.2f} seconds")
     
-    # Open the generated audio file with the default media player
-    if platform.system() == 'Darwin':  # macOS
-        # os.system(f'open {output_path}')
-        os.system(f'qlmanage -p {output_path}')
-    elif platform.system() == 'Windows':  # Windows
-        os.system(f'start {output_path}')
-    elif platform.system() == 'Linux':  # Linux
-        os.system(f'xdg-open {output_path}')
+    # Play the generated audio file
+    playsound(output_path)
 
 def for_canonical(f):
     return lambda k: f(l.canonical(k))
