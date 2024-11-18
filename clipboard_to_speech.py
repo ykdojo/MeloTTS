@@ -13,9 +13,23 @@ output_path = 'clipboard_audio.wav'
 
 import re
 
+# Mapping of letters to their phonetic pronunciations
+phonetic_map = {
+    'A': 'ay', 'B': 'bee', 'C': 'see', 'D': 'dee', 'E': 'ee',
+    'F': 'ef', 'G': 'gee', 'H': 'aitch', 'I': 'eye', 'J': 'jay',
+    'K': 'kay', 'L': 'el', 'M': 'em', 'N': 'en', 'O': 'oh',
+    'P': 'pee', 'Q': 'cue', 'R': 'ar', 'S': 'ess', 'T': 'tee',
+    'U': 'you', 'V': 'vee', 'W': 'double-u', 'X': 'ex', 'Y': 'why',
+    'Z': 'zee'
+}
+
 def expand_acronyms(text):
     # Regular expression to find acronyms (all uppercase words)
-    return re.sub(r'([A-Z]{2,})', lambda x: '!' + '!'.join(x.group(1)) + '!', text)
+    def replace_with_phonetic(match):
+        acronym = match.group(1)
+        return ' '.join(phonetic_map.get(letter, letter) for letter in acronym)
+
+    return re.sub(r'([A-Z]{2,})', replace_with_phonetic, text)
 
 def on_activate():
     # Get the current text from the clipboard
