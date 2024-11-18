@@ -2,9 +2,11 @@ import pyperclip
 from pynput import keyboard
 from melo.api import TTS
 import time
+import os
+import platform
 
 # Set up TTS model and configurations
-speed = 1.5
+speed = 1.3
 device = 'cpu'  # Will automatically use GPU if available
 model = TTS(language='EN', device=device)
 speaker_ids = model.hps.data.spk2id
@@ -20,6 +22,15 @@ def on_activate():
     model.tts_to_file(current_text, speaker_ids['EN-BR'], output_path, speed=speed)
     execution_time = time.time() - start_time
     print(f"Audio generation took {execution_time:.2f} seconds")
+    
+    # Open the generated audio file with the default media player
+    if platform.system() == 'Darwin':  # macOS
+        # os.system(f'open {output_path}')
+        os.system(f'qlmanage -p {output_path}')
+    elif platform.system() == 'Windows':  # Windows
+        os.system(f'start {output_path}')
+    elif platform.system() == 'Linux':  # Linux
+        os.system(f'xdg-open {output_path}')
 
 def for_canonical(f):
     return lambda k: f(l.canonical(k))
