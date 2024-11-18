@@ -26,12 +26,49 @@ phonetic_map = {
     'Z': 'zee'
 }
 
+# Mapping of letters to their phonetic pronunciations in Katakana
+japanese_phonetic_map = {
+    # Half-width characters
+    'A': 'エー', 'B': 'ビー', 'C': 'シー', 'D': 'ディー', 'E': 'イー',
+    'F': 'エフ', 'G': 'ジー', 'H': 'エイチ', 'I': 'アイ', 'J': 'ジェイ',
+    'K': 'ケー', 'L': 'エル', 'M': 'エム', 'N': 'エヌ', 'O': 'オー',
+    'P': 'ピー', 'Q': 'キュー', 'R': 'アール', 'S': 'エス', 'T': 'ティー',
+    'U': 'ユー', 'V': 'ヴィー', 'W': 'ダブリュー', 'X': 'エックス', 'Y': 'ワイ',
+    'Z': 'ゼット',
+    'a': 'エー', 'b': 'ビー', 'c': 'シー', 'd': 'ディー', 'e': 'イー',
+    'f': 'エフ', 'g': 'ジー', 'h': 'エイチ', 'i': 'アイ', 'j': 'ジェイ',
+    'k': 'ケー', 'l': 'エル', 'm': 'エム', 'n': 'エヌ', 'o': 'オー',
+    'p': 'ピー', 'q': 'キュー', 'r': 'アール', 's': 'エス', 't': 'ティー',
+    'u': 'ユー', 'v': 'ヴィー', 'w': 'ダブリュー', 'x': 'エックス', 'y': 'ワイ',
+    'z': 'ゼット',
+    # Full-width characters
+    'Ａ': 'エー', 'Ｂ': 'ビー', 'Ｃ': 'シー', 'Ｄ': 'ディー', 'Ｅ': 'イー',
+    'Ｆ': 'エフ', 'Ｇ': 'ジー', 'Ｈ': 'エイチ', 'Ｉ': 'アイ', 'Ｊ': 'ジェイ',
+    'Ｋ': 'ケー', 'Ｌ': 'エル', 'Ｍ': 'エム', 'Ｎ': 'エヌ', 'Ｏ': 'オー',
+    'Ｐ': 'ピー', 'Ｑ': 'キュー', 'Ｒ': 'アール', 'Ｓ': 'エス', 'Ｔ': 'ティー',
+    'Ｕ': 'ユー', 'Ｖ': 'ヴィー', 'Ｗ': 'ダブリュー', 'Ｘ': 'エックス', 'Ｙ': 'ワイ',
+    'Ｚ': 'ゼット',
+    'ａ': 'エー', 'ｂ': 'ビー', 'ｃ': 'シー', 'ｄ': 'ディー', 'ｅ': 'イー',
+    'ｆ': 'エフ', 'ｇ': 'ジー', 'ｈ': 'エイチ', 'ｉ': 'アイ', 'ｊ': 'ジェイ',
+    'ｋ': 'ケー', 'ｌ': 'エル', 'ｍ': 'エム', 'ｎ': 'エヌ', 'ｏ': 'オー',
+    'ｐ': 'ピー', 'ｑ': 'キュー', 'ｒ': 'アール', 'ｓ': 'エス', 'ｔ': 'ティー',
+    'ｕ': 'ユー', 'ｖ': 'ヴィー', 'ｗ': 'ダブリュー', 'ｘ': 'エックス', 'ｙ': 'ワイ',
+    'ｚ': 'ゼット'
+}
+
 def expand_acronyms(text):
     def replace_with_phonetic(match):
         acronym = match.group(1)
         return ' '.join(phonetic_map.get(letter, letter) for letter in acronym)
 
     return re.sub(r'([A-Z]{2,})', replace_with_phonetic, text)
+
+def convert_text_to_japanese_phonetic(text):
+    phonetic_text = ''
+    for letter in text:
+        converted_letter = japanese_phonetic_map.get(letter, letter)
+        phonetic_text += converted_letter
+    return phonetic_text
 
 def convert_kanji_to_katakana(text):
     tagger = Tagger()
@@ -64,13 +101,17 @@ def on_activate_japanese():
     katakana_text = convert_kanji_to_katakana(current_text)
     print("Katakana text:", katakana_text)
     
+    # Convert text to Japanese phonetic form
+    phonetic_text = convert_text_to_japanese_phonetic(katakana_text)
+    print("Phonetic text:", phonetic_text)
+    
     start_time = time.time()
-    japanese_model.tts_to_file(katakana_text, japanese_speaker_ids['JP'], output_path_jp, speed=speed)
+    japanese_model.tts_to_file(phonetic_text, japanese_speaker_ids['JP'], output_path_jp, speed=speed)
     execution_time = time.time() - start_time
     print(f"Audio generation took {execution_time:.2f} seconds")
     
     playsound(output_path_jp)
-
+    
 def for_canonical(f):
     return lambda k: f(l.canonical(k))
 
