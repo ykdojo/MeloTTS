@@ -2,16 +2,18 @@ import pyperclip
 from pynput import keyboard
 from melo.api import TTS
 import time
-from playsound import playsound  # Import playsound
+from playsound import playsound
+import re
 
-# Set up TTS model and configurations
+# Set up TTS models and configurations
 speed = 1.3
 device = 'cpu'  # Will automatically use GPU if available
-model = TTS(language='EN', device=device)
-speaker_ids = model.hps.data.spk2id
-output_path = 'clipboard_audio.wav'
-
-import re
+english_model = TTS(language='EN', device=device)
+japanese_model = TTS(language='JP', device=device)
+english_speaker_ids = english_model.hps.data.spk2id
+japanese_speaker_ids = japanese_model.hps.data.spk2id
+output_path_en = 'clipboard_audio_en.wav'
+output_path_jp = 'clipboard_audio_jp.wav'
 
 # Mapping of letters to their phonetic pronunciations
 phonetic_map = {
@@ -24,51 +26,62 @@ phonetic_map = {
 }
 
 def expand_acronyms(text):
-    # Regular expression to find acronyms (all uppercase words)
     def replace_with_phonetic(match):
         acronym = match.group(1)
         return ' '.join(phonetic_map.get(letter, letter) for letter in acronym)
 
     return re.sub(r'([A-Z]{2,})', replace_with_phonetic, text)
 
-def on_activate():
-    # Get the current text from the clipboard
+def on_activate_english():
     current_text = pyperclip.paste()
     print("Selected text:", current_text)
     
-    # Expand acronyms in the text
     expanded_text = expand_acronyms(current_text)
     print("Expanded text:", expanded_text)
     
-    # Convert the expanded text to audio
     start_time = time.time()
-    model.tts_to_file(expanded_text, speaker_ids['EN-BR'], output_path, speed=speed)
+    english_model.tts_to_file(expanded_text, english_speaker_ids['EN-BR'], output_path_en, speed=speed)
     execution_time = time.time() - start_time
     print(f"Audio generation took {execution_time:.2f} seconds")
     
-    # Play the generated audio file
-    playsound(output_path)
+    playsound(output_path_en)
+
+def on_activate_japanese():
+    current_text = pyperclip.paste()
+    print("Selected text:", current_text)
+    
+    start_time = time.time()
+    japanese_model.tts_to_file(current_text, japanese_speaker_ids['JP'], output_path_jp, speed=speed)
+    execution_time = time.time() - start_time
+    print(f"Audio generation took {execution_time:.2f} seconds")
+    
+    playsound(output_path_jp)
 
 def for_canonical(f):
     return lambda k: f(l.canonical(k))
 
-# Define the hotkey for <shift>+<alt>+v
-hotkey = keyboard.HotKey(
+# Define the hotkey for <shift>+<alt>+d
+hotkey_english = keyboard.HotKey(
     keyboard.HotKey.parse('<shift>+<alt>+v'),
-    on_activate
+    on_activate_english
+)
+
+hotkey_japanese = keyboard.HotKey(
+    keyboard.HotKey.parse('<shift>+<alt>+d'),
+    on_activate_japanese
 )
 
 def on_press(key):
     try:
-        # Check if the special character is pressed
-        if key.char == '◊':  # Replace '◊' with the actual character if different
-            on_activate()
+        if key.char == '◊':
+            on_activate_english()
+        if key.char == 'Î':
+            on_activate_japanese()
     except AttributeError:
-        # Handle special keys that don't have a char attribute
         pass
 
-# Set up the listener with both the hotkey and the special character check
+# Set up the listener with both the hotkeys
 with keyboard.Listener(
-        on_press=lambda k: (on_press(k), for_canonical(hotkey.press)(k)),
-        on_release=for_canonical(hotkey.release)) as l:
+        on_press=lambda k: (on_press(k), for_canonical(hotkey_english.press)(k), for_canonical(hotkey_japanese.press)(k)),
+        on_release=lambda k: (for_canonical(hotkey_english.release)(k), for_canonical(hotkey_japanese.release)(k))) as l:
     l.join()
