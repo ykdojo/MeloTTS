@@ -25,11 +25,18 @@ def play_sound_with_volume_adjustment(file_path, increase_by_db=7):
     # Play the sound
     playsound(file_path)
 
+def replace_newlines_and_colons(text):
+    return text.replace('\n', '.').replace(':', '.')
+
 def on_activate_english():
     current_text = pyperclip.paste()
     print("Selected text:", current_text)
     
-    expanded_text = expand_acronyms(current_text)
+    # Replace newlines and commas with periods
+    modified_text = replace_newlines_and_colons(current_text)
+    print("Modified text:", modified_text)
+    
+    expanded_text = expand_acronyms(modified_text)
     print("Expanded text:", expanded_text)
     
     start_time = time.time()
