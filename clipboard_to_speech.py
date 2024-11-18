@@ -39,15 +39,16 @@ def segment_japanese_text(text):
     tokenizer = Tokenizer()
     sentences = []
     sentence = ''
+    # Define a set of characters that can indicate the end of a sentence or segment
+    sentence_endings = '。！？】』」』）〉》】〕〗〙〛'
     for token in tokenizer.tokenize(text, wakati=True):
         sentence += token
-        if token in '。！？':
+        if token in sentence_endings:
             sentences.append(sentence)
             sentence = ''
     if sentence:
         sentences.append(sentence)
     return sentences
-
 def on_activate_english():
     current_text = pyperclip.paste()
     print("Selected text:", current_text)
