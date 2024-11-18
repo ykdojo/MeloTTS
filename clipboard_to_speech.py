@@ -7,7 +7,7 @@ from text_conversions import *
 from pydub import AudioSegment
 
 # Set up TTS models and configurations
-speed = 1.3
+speed = 1.15
 device = 'cpu'  # Will automatically use GPU if available
 english_model = TTS(language='EN', device=device)
 japanese_model = TTS(language='JP', device=device)
@@ -18,9 +18,9 @@ output_path_jp = 'clipboard_audio_jp.wav'
 
 def play_sound_with_volume_adjustment(file_path, increase_by_db=7):
     # Increase volume by the specified dB
-    audio = AudioSegment.from_file(file_path)
-    louder_audio = audio + increase_by_db
-    louder_audio.export(file_path, format="wav")
+    # audio = AudioSegment.from_file(file_path)
+    # louder_audio = audio + increase_by_db
+    # louder_audio.export(file_path, format="wav")
     
     # Play the sound
     playsound(file_path)
