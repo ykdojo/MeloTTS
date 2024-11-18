@@ -33,11 +33,14 @@ def expand_acronyms(text):
 
     return re.sub(r'([A-Z]{2,})', replace_with_phonetic, text)
 
-def convert_kanji_to_hiragana(text):
+def convert_kanji_to_katakana(text):
     tagger = Tagger()
     tokens = tagger(text)
-    hiragana_text = ''.join(token.feature.kana or token.surface for token in tokens)
-    return hiragana_text
+    katakana_text = ''.join(
+        token.feature.kana if token.feature.kana and re.match(r'[\u4E00-\u9FFF]', token.surface) else token.surface
+        for token in tokens
+    )
+    return katakana_text
 
 def on_activate_english():
     current_text = pyperclip.paste()
@@ -57,12 +60,12 @@ def on_activate_japanese():
     current_text = pyperclip.paste()
     print("Selected text:", current_text)
     
-    # Convert Kanji to Hiragana
-    hiragana_text = convert_kanji_to_hiragana(current_text)
-    print("Hiragana text:", hiragana_text)
+    # Convert Kanji to Katakana
+    katakana_text = convert_kanji_to_katakana(current_text)
+    print("Katakana text:", katakana_text)
     
     start_time = time.time()
-    japanese_model.tts_to_file(hiragana_text, japanese_speaker_ids['JP'], output_path_jp, speed=speed)
+    japanese_model.tts_to_file(katakana_text, japanese_speaker_ids['JP'], output_path_jp, speed=speed)
     execution_time = time.time() - start_time
     print(f"Audio generation took {execution_time:.2f} seconds")
     
