@@ -56,6 +56,12 @@ japanese_phonetic_map = {
     'ｚ': 'ゼット'
 }
 
+# Mapping of numbers to Kanji
+number_to_kanji = {
+    '0': '零', '1': '一', '2': '二', '3': '三', '4': '四',
+    '5': '五', '6': '六', '7': '七', '8': '八', '9': '九'
+}
+
 def expand_acronyms(text):
     def replace_with_phonetic(match):
         acronym = match.group(1)
@@ -79,6 +85,12 @@ def convert_kanji_to_katakana(text):
     )
     return katakana_text
 
+def convert_fullwidth_to_halfwidth(text):
+    return text.translate(str.maketrans('０１２３４５６７８９', '0123456789'))
+
+def convert_single_numbers_to_kanji(text):
+    return ''.join(number_to_kanji.get(char, char) for char in text)
+
 def on_activate_english():
     current_text = pyperclip.paste()
     print("Selected text:", current_text)
@@ -97,8 +109,16 @@ def on_activate_japanese():
     current_text = pyperclip.paste()
     print("Selected text:", current_text)
     
+    # Convert full-width numbers to half-width numbers
+    halfwidth_text = convert_fullwidth_to_halfwidth(current_text)
+    print("Half-width text:", halfwidth_text)
+    
+    # Convert single numbers to Kanji
+    kanji_text = convert_single_numbers_to_kanji(halfwidth_text)
+    print("Kanji text:", kanji_text)
+    
     # Convert Kanji to Katakana
-    katakana_text = convert_kanji_to_katakana(current_text)
+    katakana_text = convert_kanji_to_katakana(kanji_text)
     print("Katakana text:", katakana_text)
     
     # Convert text to Japanese phonetic form
