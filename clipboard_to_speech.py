@@ -6,6 +6,7 @@ from playsound import playsound
 import re
 from fugashi import Tagger  # Import Fugashi for Kanji conversion
 from mappings import phonetic_map, japanese_phonetic_map, number_to_kanji
+from text_conversions import expand_acronyms, convert_text_to_japanese_phonetic
 
 # Set up TTS models and configurations
 speed = 1.3
@@ -16,20 +17,6 @@ english_speaker_ids = english_model.hps.data.spk2id
 japanese_speaker_ids = japanese_model.hps.data.spk2id
 output_path_en = 'clipboard_audio_en.wav'
 output_path_jp = 'clipboard_audio_jp.wav'
-
-def expand_acronyms(text):
-    def replace_with_phonetic(match):
-        acronym = match.group(1)
-        return ' '.join(phonetic_map.get(letter, letter) for letter in acronym)
-
-    return re.sub(r'([A-Z]{2,})', replace_with_phonetic, text)
-
-def convert_text_to_japanese_phonetic(text):
-    phonetic_text = ''
-    for letter in text:
-        converted_letter = japanese_phonetic_map.get(letter, letter)
-        phonetic_text += converted_letter
-    return phonetic_text
 
 def convert_kanji_to_katakana(text):
     tagger = Tagger()
