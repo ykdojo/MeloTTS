@@ -3,13 +3,13 @@ from pynput import keyboard
 from melo.api import TTS
 import time
 from playsound import playsound
-from janome.tokenizer import Tokenizer
 from text_conversions import (
     expand_acronyms,
     convert_text_to_japanese_phonetic,
     convert_fullwidth_to_halfwidth,
     convert_single_numbers_to_kanji,
-    convert_kanji_to_katakana
+    convert_kanji_to_katakana,
+    segment_japanese_text
 )
 
 # Set up TTS models and configurations
@@ -21,21 +21,6 @@ english_speaker_ids = english_model.hps.data.spk2id
 japanese_speaker_ids = japanese_model.hps.data.spk2id
 output_path_en = 'clipboard_audio_en.wav'
 output_path_jp = 'clipboard_audio_jp.wav'
-
-def segment_japanese_text(text):
-    tokenizer = Tokenizer()
-    sentences = []
-    sentence = ''
-    # Define a set of characters that can indicate the end of a sentence or segment
-    sentence_endings = '。！？】』」』）〉》】〕〗〙〛'
-    for token in tokenizer.tokenize(text, wakati=True):
-        sentence += token
-        if token in sentence_endings:
-            sentences.append(sentence)
-            sentence = ''
-    if sentence:
-        sentences.append(sentence)
-    return sentences
 
 def on_activate_english():
     current_text = pyperclip.paste()

@@ -1,6 +1,7 @@
 import re
 from mappings import phonetic_map, japanese_phonetic_map
 from fugashi import Tagger  # Import Fugashi for Kanji conversion
+from janome.tokenizer import Tokenizer
 
 def expand_acronyms(text):
     def replace_with_phonetic(match):
@@ -31,3 +32,18 @@ def convert_kanji_to_katakana(text):
         for token in tokens
     )
     return katakana_text
+
+def segment_japanese_text(text):
+    tokenizer = Tokenizer()
+    sentences = []
+    sentence = ''
+    # Define a set of characters that can indicate the end of a sentence or segment
+    sentence_endings = '。！？】』」』）〉》】〕〗〙〛'
+    for token in tokenizer.tokenize(text, wakati=True):
+        sentence += token
+        if token in sentence_endings:
+            sentences.append(sentence)
+            sentence = ''
+    if sentence:
+        sentences.append(sentence)
+    return sentences
