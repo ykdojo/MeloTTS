@@ -10,6 +10,10 @@ def expand_acronyms(text):
 
     return re.sub(r'([A-Z]{2,})', replace_with_phonetic, text)
 
+def add_maru_before_closing_kagikakko(text):
+    # Use regular expression to find closing kagikakko not preceded by a maru
+    return re.sub(r'(?<!。)(」)', '。\\1', text)
+
 def convert_text_to_japanese_phonetic(text):
     phonetic_text = ''
     for letter in text:

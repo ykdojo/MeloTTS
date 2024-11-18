@@ -33,8 +33,12 @@ def on_activate_japanese():
     current_text = pyperclip.paste()
     print("Selected text:", current_text)
     
+    # Add maru before closing kagikakko
+    modified_text = add_maru_before_closing_kagikakko(current_text)
+    print("Modified text:", modified_text)
+    
     # Convert full-width numbers to half-width numbers
-    halfwidth_text = convert_fullwidth_to_halfwidth(current_text)
+    halfwidth_text = convert_fullwidth_to_halfwidth(modified_text)
     print("Half-width text:", halfwidth_text)
 
     # Convert single numbers to Kanji
