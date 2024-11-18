@@ -4,6 +4,7 @@ from melo.api import TTS
 import time
 from playsound import playsound
 from text_conversions import *
+from pydub import AudioSegment
 
 # Set up TTS models and configurations
 speed = 1.3
@@ -14,6 +15,15 @@ english_speaker_ids = english_model.hps.data.spk2id
 japanese_speaker_ids = japanese_model.hps.data.spk2id
 output_path_en = 'clipboard_audio_en.wav'
 output_path_jp = 'clipboard_audio_jp.wav'
+
+def play_sound_with_volume_adjustment(file_path, increase_by_db=7):
+    # Increase volume by the specified dB
+    audio = AudioSegment.from_file(file_path)
+    louder_audio = audio + increase_by_db
+    louder_audio.export(file_path, format="wav")
+    
+    # Play the sound
+    playsound(file_path)
 
 def on_activate_english():
     current_text = pyperclip.paste()
@@ -27,7 +37,7 @@ def on_activate_english():
     execution_time = time.time() - start_time
     print(f"Audio generation took {execution_time:.2f} seconds")
     
-    playsound(output_path_en)
+    play_sound_with_volume_adjustment(output_path_en)
 
 def on_activate_japanese():
     current_text = pyperclip.paste()
@@ -58,7 +68,7 @@ def on_activate_japanese():
     execution_time = time.time() - start_time
     print(f"Audio generation took {execution_time:.2f} seconds")
 
-    playsound(output_path_jp)
+    play_sound_with_volume_adjustment(output_path_jp)
     
 def for_canonical(f):
     return lambda k: f(l.canonical(k))
