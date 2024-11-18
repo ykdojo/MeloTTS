@@ -3,15 +3,7 @@ from pynput import keyboard
 from melo.api import TTS
 import time
 from playsound import playsound
-from text_conversions import (
-    expand_acronyms,
-    convert_text_to_japanese_phonetic,
-    convert_fullwidth_to_halfwidth,
-    convert_single_numbers_to_kanji,
-    convert_kanji_to_katakana,
-    segment_english_text,
-    segment_japanese_text
-)
+from text_conversions import *
 
 # Set up TTS models and configurations
 speed = 1.3
