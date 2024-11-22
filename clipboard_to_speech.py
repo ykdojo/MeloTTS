@@ -7,7 +7,7 @@ from text_conversions import *
 
 # Set up TTS models and configurations
 speed = 1.4
-device = 'cpu'  # Will automatically use GPU if available
+device = 'cpu'
 english_model = TTS(language='EN', device=device)
 japanese_model = TTS(language='JP', device=device)
 english_speaker_ids = english_model.hps.data.spk2id
