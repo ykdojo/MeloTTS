@@ -7,7 +7,7 @@ from text_conversions import *
 from pydub import AudioSegment
 
 # Set up TTS models and configurations
-speed = 1.15
+speed = 1.4
 device = 'cpu'  # Will automatically use GPU if available
 english_model = TTS(language='EN', device=device)
 japanese_model = TTS(language='JP', device=device)
