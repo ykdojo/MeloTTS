@@ -10,6 +10,11 @@ def expand_acronyms(text):
         parts = pattern.split('-')
         
         for part in parts:
+            # Ensure we don't match numbers with commas
+            if re.match(r'^\d{1,3}(?:,\d{3})*', part):
+                result.append(part)
+                continue
+
             letter_num_match = re.match(r'([a-zA-Z])(\d+)', part)
             if letter_num_match:
                 letter, number = letter_num_match.groups()
