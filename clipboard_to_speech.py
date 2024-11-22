@@ -65,7 +65,7 @@ def on_activate_japanese():
     execution_time = time.time() - start_time
     print(f"Audio generation took {execution_time:.2f} seconds")
 
-    play_sound_with_volume_adjustment(output_path_jp)
+    playsound(output_path_jp)
     
 def for_canonical(f):
     return lambda k: f(l.canonical(k))
