@@ -21,6 +21,10 @@ def expand_acronyms(text):
         
         return '-'.join(result)
 
+    # First handle percentages
+    text = re.sub(r'(\d+)%', r'\1 percent', text)
+    
+    # Then handle the original acronym patterns
     pattern = r'([A-Z]{2,})|([a-zA-Z]\d+(?:-[a-zA-Z0-9]+)*)'
     return re.sub(pattern, replace_with_phonetic, text)
 
