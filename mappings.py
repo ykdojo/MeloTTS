@@ -5,9 +5,14 @@ phonetic_map = {
     'K': 'kay', 'L': 'el', 'M': 'em', 'N': 'en', 'O': 'oh',
     'P': 'pee', 'Q': 'cue', 'R': 'ar', 'S': 'ess', 'T': 'tee',
     'U': 'you', 'V': 'vee', 'W': 'double-u', 'X': 'ex', 'Y': 'why',
-    'Z': 'zee'
+    'Z': 'zee',
+    'a': 'ay', 'b': 'bee', 'c': 'see', 'd': 'dee', 'e': 'ee',
+    'f': 'ef', 'g': 'gee', 'h': 'aitch', 'i': 'eye', 'j': 'jay',
+    'k': 'kay', 'l': 'el', 'm': 'em', 'n': 'en', 'o': 'oh',
+    'p': 'pee', 'q': 'cue', 'r': 'ar', 's': 'ess', 't': 'tee',
+    'u': 'you', 'v': 'vee', 'w': 'double-u', 'x': 'ex', 'y': 'why',
+    'z': 'zee'
 }
-
 # Mapping of letters to their phonetic pronunciations in Katakana
 japanese_phonetic_map = {
     # Half-width characters

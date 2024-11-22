@@ -5,10 +5,24 @@ from janome.tokenizer import Tokenizer
 
 def expand_acronyms(text):
     def replace_with_phonetic(match):
-        acronym = match.group(1)
-        return ' '.join(phonetic_map.get(letter, letter) for letter in acronym)
+        pattern = match.group(0)
+        result = []
+        parts = pattern.split('-')
+        
+        for part in parts:
+            letter_num_match = re.match(r'([a-zA-Z])(\d+)', part)
+            if letter_num_match:
+                letter, number = letter_num_match.groups()
+                result.append(f"{phonetic_map.get(letter, letter)} {number}")
+            elif part.isupper() and len(part) >= 2:
+                result.append(' '.join(phonetic_map.get(letter, letter) for letter in part))
+            else:
+                result.append(part)
+        
+        return '-'.join(result)
 
-    return re.sub(r'([A-Z]{2,})', replace_with_phonetic, text)
+    pattern = r'([A-Z]{2,})|([a-zA-Z]\d+(?:-[a-zA-Z0-9]+)*)'
+    return re.sub(pattern, replace_with_phonetic, text)
 
 def add_maru_before_closing_kagikakko(text):
     # Use regular expression to find closing kagikakko not preceded by a maru
